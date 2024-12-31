@@ -5,7 +5,7 @@
  * @param {Function} fn - Funcția async de wrapped
  * @returns {Function} Middleware function
  */
-const catchAsync = fn => {
+const catchAsync = (fn) => {
     return (req, res, next) => {
         Promise.resolve(fn(req, res, next)).catch(next);
     };
@@ -22,12 +22,29 @@ const errorHandler = (err, req, res, next) => {
     const statusCode = err.statusCode || 500;
     res.status(statusCode).json({
         success: false,
-        error: process.env.NODE_ENV === 'development' ? err.message : 'Server error',
-        stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+        error:
+            process.env.NODE_ENV === 'development' ? err.message : 'Server error',
+        stack: process.env.NODE_ENV === 'development' ? err.stack : undefined,
+    });
+};
+
+/**
+ * Middleware pentru gestionarea erorilor standard
+ * @param {Error} err - Obiectul error
+ * @param {Object} req - Request object
+ * @param {Object} res - Response object
+ * @param {Function} next - Next middleware
+ */
+const handleErrors = (err, req, res, next) => {
+    const statusCode = err.statusCode || 500;
+    res.status(statusCode).json({
+        success: false,
+        message: err.message || 'Internal Server Error',
     });
 };
 
 module.exports = {
     catchAsync,
-    errorHandler
+    errorHandler,
+    handleErrors, // Exportăm noua funcție
 };
