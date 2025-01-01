@@ -1,11 +1,17 @@
 // backend/routes/auth.routes.js
 const express = require('express');
 const router = express.Router();
-const AuthService = require('../services/auth.service');
-const { catchAsync } = require('../middleware/error.middleware');
 const { check, validationResult } = require("express-validator");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
+const { catchAsync } = require('../middleware/error.middleware');
+
+/**
+ * @swagger
+ * tags:
+ *   name: Auth
+ *   description: API for user authentication and registration
+ */
 
 /**
  * Middleware pentru tratarea erorilor de validare
@@ -20,11 +26,29 @@ const handleValidationErrors = (req, res, next) => {
 };
 
 /**
- * Rută pentru înregistrarea utilizatorilor noi
- * POST /api/auth/register
- * @param {string} username - Numele de utilizator
- * @param {string} password - Parola utilizatorului
- * @returns {Object} Utilizatorul creat și mesaj de succes
+ * @swagger
+ * /auth/register:
+ *   post:
+ *     summary: Register a new user
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               username:
+ *                 type: string
+ *                 example: johndoe
+ *               password:
+ *                 type: string
+ *                 example: securePassword123
+ *     responses:
+ *       201:
+ *         description: User registered successfully
+ *       400:
+ *         description: Invalid input
  */
 router.post('/register', [
     check("username", "Username este obligatoriu").notEmpty(),
@@ -62,11 +86,29 @@ router.post('/register', [
 }));
 
 /**
- * Rută pentru autentificarea utilizatorilor
- * POST /api/auth/login
- * @param {string} username - Numele de utilizator
- * @param {string} password - Parola utilizatorului
- * @returns {Object} Token JWT și datele utilizatorului
+ * @swagger
+ * /auth/login:
+ *   post:
+ *     summary: Log in a user
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               username:
+ *                 type: string
+ *                 example: johndoe
+ *               password:
+ *                 type: string
+ *                 example: securePassword123
+ *     responses:
+ *       200:
+ *         description: User logged in successfully
+ *       401:
+ *         description: Invalid credentials
  */
 router.post('/login', [
     check("username", "Username este obligatoriu").notEmpty(),
